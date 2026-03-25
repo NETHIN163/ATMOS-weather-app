@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATMOS — Weather</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="bg-layer bg-night" id="bgNight"></div>
+<div class="bg-layer bg-clear-day" id="bgClearDay" style="opacity:0"></div>
+<div class="bg-layer bg-cloudy"   id="bgCloudy"   style="opacity:0"></div>
+<div class="bg-layer bg-rain"      id="bgRain"      style="opacity:0"></div>
+<div class="bg-layer bg-snow"      id="bgSnow"      style="opacity:0"></div>
+<div class="bg-layer bg-thunder"  id="bgThunder"  style="opacity:0"></div>
+<div class="bg-layer bg-fog"       id="bgFog"       style="opacity:0"></div>
+<div class="particles" id="particles"></div>
+<div class="lightning" id="lightning" style="display:none"></div>
+
+<div class="app">
+    <div class="header">
+        <div class="logo">ATM<span>O</span>S</div>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+            <span class="t-icon t-moon">🌙</span>
+            <span class="t-icon t-sun">☀️</span>
+        </button>
+    </div>
+
+    <div class="search-wrap">
+        <input class="search-input" id="searchInput" type="text"
+            placeholder="Search city… e.g. Tokyo, Paris, Mumbai" autocomplete="off"/>
+        <button class="search-btn" id="searchBtn">🔍</button>
+    </div>
+
+    <div class="loader-wrap" id="loader">
+        <div class="loader-orb"><div class="loader-dot">🌍</div></div>
+        <div class="loader-text">Fetching weather…</div>
+    </div>
+
+    <div class="error-wrap" id="errorWrap">
+        <div class="error-icon">⚠️</div>
+        <div class="error-text" id="errorText">City not found. Please try again.</div>
+    </div>
+
+    <div class="empty-state" id="emptyState">
+        <span class="empty-icon">🌤️</span>
+        <div class="empty-title">What's the weather?</div>
+        <div class="empty-sub">Search any city in the world to begin</div>
+    </div>
+
+    <div class="weather-card" id="weatherCard">
+        <div class="card-main">
+            <div class="glass-shimmer"></div>
+            <div class="location-row">
+                <span>📍</span>
+                <span class="location-name" id="cityName">—</span>
+                <span class="location-country" id="countryCode"></span>
+            </div>
+            <div class="date-row" id="dateStr">—</div>
+            <div class="temp-row">
+                <div class="weather-icon-big" id="weatherIcon">—</div>
+                <div>
+                    <div class="temp-value" id="tempVal">—<span class="temp-unit">°C</span></div>
+                    <div class="temp-desc" id="weatherDesc">—</div>
+                </div>
+            </div>
+            <div class="feels-badge">🤔 Feels like &nbsp;<strong id="feelsLike">—°C</strong></div>
+        </div>
+
+        <div class="card-divider"></div>
+
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-label"><span class="stat-icon">💧</span>Humidity</div>
+                <div class="stat-value" id="humidityVal">—</div>
+                <div class="stat-sub" id="humiditySub">—</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label"><span class="stat-icon">💨</span>Wind Speed</div>
+                <div class="stat-value" id="windVal">—</div>
+                <div class="stat-sub" id="windSub">—</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label"><span class="stat-icon">👁️</span>Visibility</div>
+                <div class="stat-value" id="visibilityVal">—</div>
+                <div class="stat-sub">km</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label"><span class="stat-icon">🌡️</span>Pressure</div>
+                <div class="stat-value" id="pressureVal">—</div>
+                <div class="stat-sub">hPa</div>
+            </div>
+        </div>
+
+        <div class="card-bottom">
+            <div class="powered-by">Powered by <a href="https://openweathermap.org" target="_blank">OpenWeather</a></div>
+            <button class="refresh-btn" id="refreshBtn">
+                <span class="refresh-icon">↻</span> Refresh
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
