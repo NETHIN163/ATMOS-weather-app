@@ -1,4 +1,3 @@
-/* Root Variables for Themes */
 :root {
     --glass-bg: rgba(255, 255, 255, 0.08);
     --glass-border: rgba(255, 255, 255, 0.18);
@@ -44,7 +43,6 @@ body {
     position: relative;
 }
 
-/* Dynamic Background Layers */
 .bg-layer {
     position: fixed;
     inset: 0;
@@ -63,7 +61,6 @@ body {
 [data-theme="light"] .bg-clear-day { background: linear-gradient(135deg, #60a5fa 0%, #38bdf8 30%, #7dd3fc 55%, #fde68a 100%); }
 [data-theme="light"] .bg-snow { background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 40%, #bae6fd 70%, #e0e7ff 100%); }
 
-/* Particle Effects (Rain, Snow, etc.) */
 .particles { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
 
 .particle {
@@ -126,7 +123,6 @@ body {
     99% { opacity: .7; }
 }
 
-/* App Container */
 .app { position: relative; z-index: 10; width: 100%; max-width: 480px; padding: 1.5rem; }
 
 .header {
@@ -153,7 +149,6 @@ body {
 
 .logo span { color: var(--accent); }
 
-/* Theme Toggle */
 .theme-toggle {
     width: 52px;
     height: 28px;
@@ -187,7 +182,6 @@ body {
 [data-theme="light"] .theme-toggle .t-sun { opacity: 1; }
 [data-theme="light"] .theme-toggle .t-moon { opacity: 0; }
 
-/* Search Bar */
 .search-wrap { position: relative; margin-bottom: 1.5rem; animation: slideDown .7s .08s cubic-bezier(.22, 1, .36, 1) both; }
 
 .search-input {
@@ -228,7 +222,6 @@ body {
 
 .search-btn:hover { transform: translateY(-50%) scale(1.08); }
 
-/* Weather Card Main Styling */
 .weather-card {
     display: none;
     border-radius: 28px;
@@ -271,7 +264,6 @@ body {
 
 .card-divider { height: 1px; background: linear-gradient(to right, transparent, var(--glass-border), transparent); margin: 0 1.5rem; }
 
-/* Stats Grid */
 .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--glass-border); }
 .stat-item { background: var(--glass-bg); padding: 1.2rem 1.5rem; display: flex; flex-direction: column; gap: .35rem; transition: background .2s; cursor: default; }
 .stat-item:hover { background: var(--card-hover); }
@@ -289,17 +281,126 @@ body {
 .refresh-icon { font-size: 1rem; display: inline-block; transition: transform .5s; }
 .refresh-btn:hover .refresh-icon { transform: rotate(180deg); }
 
-/* Loader & Error States */
+/* FIX 5: loader-dot now properly centered inside the orb */
 .loader-wrap { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 3rem 0; animation: fadeIn .4s ease; }
 .loader-wrap.active { display: flex; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-.loader-orb { width: 64px; height: 64px; position: relative; margin-bottom: 1.2rem; }
-.loader-orb::before, .loader-orb::after { content: ''; position: absolute; inset: 0; border-radius: 50%; border: 3px solid transparent; }
+.loader-orb {
+    width: 64px;
+    height: 64px;
+    position: relative;
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* FIX: Use pseudo-elements for spinner rings, leave room for the emoji dot */
+.loader-orb::before, .loader-orb::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 3px solid transparent;
+}
+
 .loader-orb::before { border-top-color: var(--accent); animation: spin 1s linear infinite; }
 .loader-orb::after { border-bottom-color: rgba(255, 255, 255, .3); animation: spin 1.5s linear infinite reverse; inset: 8px; }
+
+/* FIX: loader-dot sits centered inside the orb */
+.loader-dot {
+    font-size: 1.5rem;
+    line-height: 1;
+    position: relative;
+    z-index: 1;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+}
+
 @keyframes spin { to { transform: rotate(360deg); } }
+
+.loader-text { color: var(--text-secondary); font-size: .85rem; letter-spacing: .08em; }
 
 .error-wrap { display: none; padding: 2rem; text-align: center; animation: fadeIn .4s ease; }
 .error-wrap.active { display: block; }
+
+.error-icon { font-size: 2.5rem; margin-bottom: .6rem; }
+.error-text { color: var(--text-secondary); font-size: .95rem; }
+
 .empty-state { text-align: center; padding: 2.5rem 1rem; animation: slideDown .7s .2s cubic-bezier(.22, 1, .36, 1) both; }
+.empty-icon { font-size: 3.5rem; display: block; margin-bottom: 1rem; }
+.empty-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.3rem; color: var(--text-primary); margin-bottom: .4rem; }
+.empty-sub { color: var(--text-muted); font-size: .9rem; }
+
+/* ---------------------------------------------------- */
+/* FORECAST STYLES                                      */
+/* ---------------------------------------------------- */
+.forecast-wrap {
+    padding: 1.5rem;
+    overflow: hidden;
+}
+
+.forecast {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.8rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    scrollbar-width: none;
+}
+
+.forecast::-webkit-scrollbar {
+    display: none;
+}
+
+.forecast-card {
+    flex: 1;
+    min-width: 70px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 1rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    transition: transform 0.3s, background 0.3s;
+    cursor: default;
+}
+
+.forecast-card:hover {
+    transform: translateY(-5px);
+    background: var(--card-hover);
+}
+
+/* Day label */
+.forecast-card p:first-child {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+/* Temp */
+.forecast-card p:nth-child(3) {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+}
+
+/* Condition */
+.forecast-card p:last-child {
+    font-size: 0.65rem;
+    font-weight: 300;
+    color: var(--text-secondary);
+    opacity: 0.8;
+    text-align: center;
+    text-transform: capitalize;
+}

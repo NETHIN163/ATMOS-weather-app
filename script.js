@@ -1,5 +1,6 @@
-const API_KEY = 'bd5e378503939ddaee76f12ad7a97608';
+const API_KEY = '0faee197d8ed4f43f763ca327ca49a0d';
 const BASE_URL = 'https://api.openweathermap.org/data/2.5/weather';
+const FORECAST_URL = 'https://api.openweathermap.org/data/2.5/forecast';
 
 let currentCity = '';
 
@@ -12,15 +13,19 @@ const loader = $('loader'),
 const emptyState = $('emptyState'),
     weatherCard = $('weatherCard');
 
-// Theme toggle
 $('themeToggle').addEventListener('click', () => {
     document.documentElement.dataset.theme =
         document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
 });
 
-// Search Logic
 searchBtn.addEventListener('click', doSearch);
 searchInput.addEventListener('keydown', e => e.key === 'Enter' && doSearch());
+searchInput.addEventListener('input', () => {
+    if (searchInput.value.trim() === '') {
+        currentCity = '';
+        showEmpty();
+    }
+});
 $('refreshBtn').addEventListener('click', () => currentCity && fetchWeather(currentCity));
 
 function doSearch() {
@@ -34,11 +39,71 @@ async function fetchWeather(city) {
     showLoader();
     try {
         const res = await fetch(`${BASE_URL}?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=metric`);
-        if (!res.ok) throw new Error(res.status === 404 ? 'City not found. Please try again.' : 'Something went wrong. Try later.');
-        renderWeather(await res.json());
+
+        if (!res.ok) {
+            throw new Error(res.status === 404 ? 'City not found. Please try again.' : 'Something went wrong. Try later.');
+        }
+
+        const data = await res.json();
+        renderWeather(data);
+        fetchForecast(city);
+
     } catch (err) {
         showError(err.message);
     }
+}
+
+// FIX 1: fetchForecast now calls renderForecast instead of just console.logging
+async function fetchForecast(city) {
+    try {
+        const res = await fetch(`${FORECAST_URL}?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=metric`);
+        if (!res.ok) return;
+        const data = await res.json();
+        renderForecast(data);
+    } catch (err) {
+        console.error("Forecast error:", err);
+    }
+}
+
+// FIX 2: Added missing renderForecast function
+// The API returns 3-hour intervals; we pick one entry per day (noon slot preferred)
+function renderForecast(data) {
+    const container = $('forecastContainer');
+    if (!container) return;
+    container.innerHTML = '';
+
+    // Group forecast entries by day, pick the midday entry (or first available)
+    const days = {};
+    data.list.forEach(item => {
+        const date = new Date(item.dt * 1000);
+        const dayKey = date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+        const hour = date.getHours();
+        // Prefer entries around noon (11–14h), otherwise take first of the day
+        if (!days[dayKey] || (hour >= 11 && hour <= 14)) {
+            days[dayKey] = item;
+        }
+    });
+
+    // Skip today, show next 5 days
+    const entries = Object.entries(days).slice(1, 6);
+
+    entries.forEach(([label, item]) => {
+        const temp = Math.round(item.main.temp);
+        const desc = item.weather[0].description;
+        const code = item.weather[0].id;
+        const isDay = item.sys.pod === 'd';
+        const emoji = weatherEmoji(code, isDay);
+
+        const card = document.createElement('div');
+        card.className = 'forecast-card';
+        card.innerHTML = `
+            <p>${label}</p>
+            <span style="font-size:1.6rem;line-height:1">${emoji}</span>
+            <p>${temp}°C</p>
+            <p>${desc}</p>
+        `;
+        container.appendChild(card);
+    });
 }
 
 function renderWeather(d) {
@@ -62,7 +127,6 @@ function renderWeather(d) {
     showCard();
 }
 
-// Utility Functions
 function formatDate() {
     return new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 }
@@ -94,7 +158,6 @@ function weatherEmoji(id, isDay) {
     return '☁️';
 }
 
-// Visual Effects
 const BG_IDS = ['bgNight', 'bgClearDay', 'bgCloudy', 'bgRain', 'bgSnow', 'bgThunder', 'bgFog'];
 
 function setBackground(id, isDay) {
@@ -107,8 +170,13 @@ function setBackground(id, isDay) {
     else if (id === 800) t = 'bgClearDay';
     else if (id >= 801) t = 'bgCloudy';
 
-    BG_IDS.forEach(b => $(b).style.opacity = b === t ? '1' : '0');
-    $('lightning').style.display = t === 'bgThunder' ? 'block' : 'none';
+    BG_IDS.forEach(b => {
+        const el = $(b);
+        if (el) el.style.opacity = b === t ? '1' : '0';
+    });
+
+    const lightning = $('lightning');
+    if (lightning) lightning.style.display = t === 'bgThunder' ? 'block' : 'none';
 
     clearParticles();
     if (t === 'bgRain' || t === 'bgThunder') spawnRain();
@@ -156,19 +224,18 @@ function spawnParticles() {
     }
 }
 
-// UI State Management
 function showLoader() {
     loader.classList.add('active');
     errorWrap.classList.remove('active');
     weatherCard.classList.remove('active');
+    // FIX 3: Use consistent display toggling for emptyState
     emptyState.style.display = 'none';
 }
 
 function showCard() {
     loader.classList.remove('active');
     errorWrap.classList.remove('active');
-    weatherCard.classList.remove('active');
-    void weatherCard.offsetWidth; // Trigger reflow for animation
+    void weatherCard.offsetWidth;
     weatherCard.classList.add('active');
     emptyState.style.display = 'none';
 }
@@ -181,12 +248,14 @@ function showError(msg) {
     emptyState.style.display = 'none';
 }
 
+// FIX 4: showEmpty now explicitly sets display and hides other states
 function showEmpty() {
     loader.classList.remove('active');
+    errorWrap.classList.remove('active');
+    weatherCard.classList.remove('active');
     emptyState.style.display = 'block';
 }
 
-// Auto-detect location on load
 window.addEventListener('DOMContentLoaded', () => {
     spawnParticles();
     if (navigator.geolocation) {
@@ -200,7 +269,10 @@ window.addEventListener('DOMContentLoaded', () => {
                 searchInput.value = data.name;
                 currentCity = data.name;
                 renderWeather(data);
+                fetchForecast(data.name);
             } catch { showEmpty(); }
         }, () => { showEmpty(); });
+    } else {
+        showEmpty();
     }
 });
