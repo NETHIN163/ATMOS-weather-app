@@ -29,55 +29,6 @@ ATMOS is a modern, responsive weather web application that provides real-time we
 
 ---
 
-## 📁 Project Structure
-
-# 🌦️ ATMOS Weather App
-
-ATMOS is a modern, responsive weather web application that provides real-time weather data and forecasts for any city worldwide.
-
----
-
-## 🚀 Features
-
-- 🔍 Search weather by city name
-- 📍 Get weather using current location (geolocation)
-- 🌡️ Real-time temperature, humidity, wind, and pressure
-- 📊 5-day weather forecast
-- 🌙 Light/Dark theme toggle
-- ⚡ Smooth UI with modern design
-
----
-
-## 🛠️ Tech Stack
-
-### Frontend
-- HTML
-- CSS
-- JavaScript (Vanilla)
-
-### Backend
-- Node.js
-- Express.js
-- OpenWeather API
-
----
-
-## 📁 Project Structure
-
-ATMOS-weather-app/
-│
-├── Backend/
-│ ├── server.mjs
-│ ├── package.json
-│ └── .env
-│
-├── Frontend/
-│ ├── index.html
-│ ├── style.css
-│ └── script.js
-
-
----
 
 ## ⚙️ Setup Instructions
 
