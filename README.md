@@ -69,20 +69,22 @@ Run using live server:
 
 npx live-server
 
-##📸 Screenshot
+
+
+📸 Screenshot
 <img width="1665" height="1076" alt="image" src="https://github.com/user-attachments/assets/25ea1906-9511-485c-835c-ea2c06989ca9" />
 
 
 
 
-##🤝 Contributing
+🤝 Contributing
 
 Feel free to fork this project and improve it!
 
-##📜 License
+📜 License
 
 This project is open-source and available under the MIT License.
 
-##👨‍💻 Author
+👨‍💻 Author
 
 Nethin S
